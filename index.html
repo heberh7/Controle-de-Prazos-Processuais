@@ -1,594 +1,182 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Prazos Processuais</title>
-    <style>
-        :root {
-            --primary-color: #0d6efd;
-            --secondary-color: #6c757d;
-            --success-color: #198754;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            --light-color: #f8f9fa;
-            --dark-color: #212529;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--light-color);
-            color: var(--dark-color);
-        }
-        h1 {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 20px;
-            margin: 0;
-            text-align: center;
-        }
-        .container {
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .form-group {
-            display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            width: 100%;
-            margin-bottom: 5px;
-        }
-        .form-group input, .form-group select, .form-group textarea {
-            flex: 1;
-            padding: 8px;
-            margin-right: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .form-group textarea {
-            flex: 100%;
-            resize: vertical;
-        }
-        .form-actions {
-            margin-top: 10px;
-        }
-        .form-actions button {
-            padding: 10px 20px;
-            margin-right: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .btn-primary { background-color: var(--primary-color); color: white; }
-        .btn-secondary { background-color: var(--secondary-color); color: white; }
-        .btn-success { background-color: var(--success-color); color: white; }
-        .btn-danger { background-color: var(--danger-color); color: white; }
-        .btn-warning { background-color: var(--warning-color); color: black; }
-        .btn-light { background-color: var(--light-color); color: black; border: 1px solid #ccc; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table th, table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        table th {
-            cursor: pointer;
-            background-color: var(--primary-color);
-            color: white;
-        }
-        table tr:nth-child(even) { background-color: #f2f2f2; }
-        table tr:hover { background-color: #ddd; }
-        .status {
-            font-weight: bold;
-        }
-        .status.no-prazo { color: var(--success-color); }
-        .status.vence-hoje { color: var(--warning-color); }
-        .status.vencido { color: var(--danger-color); }
-        .status.concluido { color: var(--secondary-color); }
-        .diligencias-container {
-            margin-top: 10px;
-            padding: 10px;
-            border: 1px dashed #ccc;
-            background-color: #fafafa;
-        }
-        .diligencias-container ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        .diligencias-container li {
-            margin-bottom: 5px;
-        }
-        .diligencias-container button {
-            margin-left: 5px;
-        }
-        .holiday-section {
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #ccc;
-            background-color: #ffffff;
-        }
-        .holiday-section h3 {
-            margin-top: 0;
-        }
-        .holiday-list {
-            display: flex;
-            flex-wrap: wrap;
-        }
-        .holiday-item {
-            background-color: var(--light-color);
-            border: 1px solid #ccc;
-            padding: 5px 10px;
-            margin: 5px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-        }
-        .holiday-item span {
-            margin-right: 5px;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Formulário - Judiciário</title>
+  <style>
+    /* Estilo simples e limpo */
+    body { font-family: Inter, system-ui, Arial; background:#f5f6fb; color:#111; margin:0; padding:0; display:flex; align-items:center; justify-content:center; min-height:100vh; }
+    .card { background:#fff; padding:22px; border-radius:10px; box-shadow:0 6px 18px rgba(20,20,40,0.08); width:420px; max-width:95%; }
+    h1 { margin:0 0 12px 0; font-size:20px; }
+    label { display:block; font-size:13px; margin-top:10px; }
+    input[type="text"], input[type="date"], input[type="email"], textarea { width:100%; padding:8px 10px; margin-top:6px; border-radius:6px; border:1px solid #ddd; font-size:14px; box-sizing:border-box; }
+    textarea { min-height:90px; resize:vertical; }
+    .btn { margin-top:12px; display:inline-block; padding:10px 14px; border-radius:8px; border:0; cursor:pointer; font-weight:600; }
+    .btn-primary { background:#2b6cb0; color:white; }
+    .btn-ghost { background:transparent; color:#2b6cb0; border:1px solid #cfe0ff; }
+    .small { font-size:13px; color:#666; margin-top:8px; }
+    .top-right { float:right; font-size:13px; }
+    .message { margin-top:10px; padding:8px 10px; border-radius:6px; background:#eef9f2; color:#064; display:none; }
+    .error { background:#fff1f0; color:#9b1c1c; display:none; }
+    .logout { float:right; font-size:13px; color:#c00; cursor:pointer; text-decoration:underline; }
+  </style>
 </head>
 <body>
-    <h1>Controle de Prazos Processuais</h1>
-    <div class="container">
-        <div id="main-form" class="form">
-            <h2>Adicionar Processo</h2>
-            <div class="form-group">
-                <label for="processNumber">Número do Processo</label>
-                <input type="text" id="processNumber" required>
-            </div>
-            <div class="form-group">
-                <label for="subject">Assunto</label>
-                <input type="text" id="subject" required>
-            </div>
-            <div class="form-group">
-                <label for="responsible">Responsável</label>
-                <input type="text" id="responsible" required>
-            </div>
-            <div class="form-group">
-                <label for="startDate">Data de Início</label>
-                <input type="date" id="startDate" required>
-            </div>
-            <div class="form-group">
-                <label for="days">Prazo (nº de dias)</label>
-                <input type="number" id="days" min="0" required>
-            </div>
-            <div class="form-group">
-                <label for="deadlineType">Tipo de Prazo</label>
-                <select id="deadlineType">
-                    <option value="business">Dias úteis</option>
-                    <option value="calendar">Dias corridos</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="observations">Observações</label>
-                <textarea id="observations" rows="2"></textarea>
-            </div>
-            <div class="form-actions">
-                <button class="btn-primary" onclick="addProcess()">Adicionar</button>
-                <button class="btn-secondary" onclick="resetForm()">Limpar</button>
-                <button class="btn-light" onclick="exportData()">Exportar JSON</button>
-                <button class="btn-light" onclick="document.getElementById('importFile').click()">Importar JSON</button>
-                <button class="btn-warning" onclick="window.print()">Imprimir</button>
-                <input type="file" id="importFile" style="display:none" accept="application/json" onchange="importData(event)">
-            </div>
-        </div>
-        <div class="holiday-section">
-            <h3>Feriados</h3>
-            <div class="form-group">
-                <label for="holidayDate">Adicionar Feriado</label>
-                <input type="date" id="holidayDate">
-                <button class="btn-primary" onclick="addHoliday()">Adicionar</button>
-            </div>
-            <div class="holiday-list" id="holidayList">
-                <!-- holidays will appear here -->
-            </div>
-        </div>
-        <h2>Processos</h2>
-        <div class="form-group">
-            <label for="searchInput">Buscar (Processo, Assunto, Responsável)</label>
-            <input type="text" id="searchInput" onkeyup="renderTable()" placeholder="Buscar...">
-        </div>
-        <table id="processTable">
-            <thead>
-                <tr>
-                    <th onclick="sortBy('processNumber')">Nº Processo</th>
-                    <th onclick="sortBy('subject')">Assunto</th>
-                    <th onclick="sortBy('responsible')">Responsável</th>
-                    <th onclick="sortBy('startDate')">Data Início</th>
-                    <th onclick="sortBy('dueDate')">Data Limite</th>
-                    <th onclick="sortBy('deadlineType')">Tipo</th>
-                    <th onclick="sortBy('days')">Dias</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="processTableBody">
-                <!-- rows will be generated here -->
-            </tbody>
-        </table>
+  <div class="card" id="login-card">
+    <h1>Entrar</h1>
+    <form id="login-form">
+      <label>Usuário
+        <input id="username" type="text" placeholder="Usuário" required />
+      </label>
+      <label>Senha
+        <input id="password" type="password" placeholder="Senha" required />
+      </label>
+      <button class="btn btn-primary" type="submit">Entrar</button>
+      <div class="small">Usuário único: <b>judiciario</b> / Senha: <b>juz2025</b></div>
+    </form>
+    <div id="login-error" class="error"></div>
+  </div>
+
+  <div class="card" id="app-card" style="display:none;">
+    <div style="overflow:hidden;">
+      <h1>Formulário de Cadastro <span class="top-right" id="user-badge"></span></h1>
+      <div class="logout" id="logout-btn">Sair</div>
     </div>
 
-    <script>
-        // Application Data
-        let processes = [];
-        let holidays = [];
-        let sortColumn = null;
-        let sortDirection = 1; // 1 ascending, -1 descending
+    <form id="data-form">
+      <label>Nome completo
+        <input id="fullName" type="text" required />
+      </label>
 
-        // Load saved data from localStorage
-        function loadFromStorage() {
-            const saved = localStorage.getItem('processes');
-            if (saved) {
-                processes = JSON.parse(saved);
-            }
-            const savedHolidays = localStorage.getItem('holidays');
-            if (savedHolidays) {
-                holidays = JSON.parse(savedHolidays);
-            }
+      <label>Data
+        <input id="dateField" type="date" required />
+      </label>
+
+      <label>E-mail
+        <input id="emailField" type="email" />
+      </label>
+
+      <label>Observações
+        <textarea id="notesField" placeholder="Observações..."></textarea>
+      </label>
+
+      <button class="btn btn-primary" type="submit">Salvar</button>
+      <button class="btn btn-ghost" type="button" id="clear-btn">Limpar</button>
+
+      <div id="success-msg" class="message">Dados salvos com sucesso!</div>
+      <div id="error-msg" class="error">Erro ao salvar. Veja o console.</div>
+    </form>
+  </div>
+
+  <!-- SCRIPT: Firebase + Lógica -->
+  <script type="module">
+    // --- IMPORTS (SDK modular via CDN) ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    // --- SEU FIREBASE CONFIG (colado do seu projeto) ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyAgEXt65mP9TlbGuUS4QzL9kczQB3ARmDM",
+      authDomain: "meu-site-judiciario.firebaseapp.com",
+      projectId: "meu-site-judiciario",
+      storageBucket: "meu-site-judiciario.firebasestorage.app",
+      messagingSenderId: "1017649751090",
+      appId: "1:1017649751090:web:f786d9c20d0d97a792082b",
+      measurementId: "G-124Q2B33QX"
+    };
+
+    // Inicializa Firebase
+    const app = initializeApp(firebaseConfig);
+    try { getAnalytics(app); } catch (e) { /* analytics pode falhar em localhost, tudo bem */ }
+    const db = getFirestore(app);
+
+    // DOM
+    const loginCard = document.getElementById('login-card');
+    const appCard = document.getElementById('app-card');
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+    const userBadge = document.getElementById('user-badge');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    const dataForm = document.getElementById('data-form');
+    const successMsg = document.getElementById('success-msg');
+    const errorMsg = document.getElementById('error-msg');
+    const clearBtn = document.getElementById('clear-btn');
+
+    // Credenciais solicitadas (hardcoded conforme pediu)
+    const VALID_USER = 'judiciario';
+    const VALID_PASS = 'juz2025';
+
+    // Verifica login salvo
+    function showAppIfLogged() {
+      const logged = localStorage.getItem('loggedIn') === 'true';
+      if (logged) {
+        loginCard.style.display = 'none';
+        appCard.style.display = 'block';
+        userBadge.textContent = VALID_USER;
+      } else {
+        loginCard.style.display = 'block';
+        appCard.style.display = 'none';
+      }
+    }
+    showAppIfLogged();
+
+    // LOGIN
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      loginError.style.display = 'none';
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value;
+      if (user === VALID_USER && pass === VALID_PASS) {
+        localStorage.setItem('loggedIn', 'true');
+        showAppIfLogged();
+      } else {
+        loginError.textContent = 'Usuário ou senha inválidos.';
+        loginError.style.display = 'block';
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('loggedIn');
+      showAppIfLogged();
+    });
+
+    // LIMPAR FORM
+    clearBtn.addEventListener('click', () => {
+      dataForm.reset();
+    });
+
+    // SALVAR DADOS NO FIRESTORE
+    dataForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      successMsg.style.display = 'none';
+      errorMsg.style.display = 'none';
+
+      const payload = {
+        nome: document.getElementById('fullName').value.trim(),
+        data: document.getElementById('dateField').value,
+        email: document.getElementById('emailField').value.trim(),
+        observacoes: document.getElementById('notesField').value.trim(),
+        criadoEm: serverTimestamp()
+      };
+
+      try {
+        await addDoc(collection(db, 'submissions'), payload);
+        successMsg.style.display = 'block';
+        dataForm.reset();
+      } catch (err) {
+        console.error('Erro salvando no Firestore:', err);
+        errorMsg.textContent = 'Erro ao salvar: ' + (err?.message || 'ver console');
+        errorMsg.style.display = 'block';
+
+        // dica útil ao usuário sobre permissão
+        if (err?.code === 'permission-denied') {
+          errorMsg.textContent += ' — verifique as regras do Firestore no Console do Firebase.';
         }
-
-        function saveToStorage() {
-            localStorage.setItem('processes', JSON.stringify(processes));
-            localStorage.setItem('holidays', JSON.stringify(holidays));
-        }
-
-        function resetForm() {
-            document.getElementById('processNumber').value = '';
-            document.getElementById('subject').value = '';
-            document.getElementById('responsible').value = '';
-            document.getElementById('startDate').value = '';
-            document.getElementById('days').value = '';
-            document.getElementById('deadlineType').value = 'business';
-            document.getElementById('observations').value = '';
-        }
-
-        function addProcess() {
-            const processNumber = document.getElementById('processNumber').value.trim();
-            const subject = document.getElementById('subject').value.trim();
-            const responsible = document.getElementById('responsible').value.trim();
-            const startDate = document.getElementById('startDate').value;
-            const days = parseInt(document.getElementById('days').value);
-            const deadlineType = document.getElementById('deadlineType').value;
-            const observations = document.getElementById('observations').value.trim();
-            if (!processNumber || !subject || !responsible || !startDate || isNaN(days)) {
-                alert('Por favor, preencha todos os campos obrigatórios.');
-                return;
-            }
-            const dueDate = calculateDueDate(startDate, days, deadlineType);
-            const newProcess = {
-                id: generateId(),
-                processNumber,
-                subject,
-                responsible,
-                startDate,
-                days,
-                deadlineType,
-                dueDate,
-                observations,
-                completed: false,
-                diligencias: []
-            };
-            processes.push(newProcess);
-            saveToStorage();
-            resetForm();
-            renderTable();
-        }
-
-        function generateId() {
-            return '_' + Math.random().toString(36).substr(2, 9);
-        }
-
-        function calculateDueDate(startDateStr, days, type) {
-            const holidaysSet = new Set(holidays);
-            let date = new Date(startDateStr);
-            if (type === 'calendar') {
-                // calendar days
-                date.setDate(date.getDate() + days);
-                return date.toISOString().slice(0, 10);
-            } else {
-                // business days
-                let daysAdded = 0;
-                while (daysAdded < days) {
-                    date.setDate(date.getDate() + 1);
-                    const dayOfWeek = date.getDay();
-                    const formatted = date.toISOString().slice(0, 10);
-                    if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidaysSet.has(formatted)) {
-                        daysAdded++;
-                    }
-                }
-                return date.toISOString().slice(0, 10);
-            }
-        }
-
-        function getStatus(process) {
-            if (process.completed) {
-                return { label: 'Concluído', class: 'concluido' };
-            }
-            const today = new Date().toISOString().slice(0, 10);
-            if (process.dueDate < today) {
-                return { label: 'Vencido', class: 'vencido' };
-            } else if (process.dueDate === today) {
-                return { label: 'Vence hoje', class: 'vence-hoje' };
-            } else {
-                return { label: 'No prazo', class: 'no-prazo' };
-            }
-        }
-
-        function renderTable() {
-            const tbody = document.getElementById('processTableBody');
-            tbody.innerHTML = '';
-            let filtered = processes;
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            if (searchTerm) {
-                filtered = processes.filter(p => {
-                    return p.processNumber.toLowerCase().includes(searchTerm) ||
-                           p.subject.toLowerCase().includes(searchTerm) ||
-                           p.responsible.toLowerCase().includes(searchTerm);
-                });
-            }
-            // Sorting
-            if (sortColumn) {
-                filtered = [...filtered].sort((a, b) => {
-                    let valA = a[sortColumn];
-                    let valB = b[sortColumn];
-                    if (sortColumn === 'startDate' || sortColumn === 'dueDate') {
-                        valA = new Date(valA);
-                        valB = new Date(valB);
-                    }
-                    if (valA < valB) return -1 * sortDirection;
-                    if (valA > valB) return 1 * sortDirection;
-                    return 0;
-                });
-            }
-            filtered.forEach((process, index) => {
-                const status = getStatus(process);
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${process.processNumber}</td>
-                    <td>${process.subject}</td>
-                    <td>${process.responsible}</td>
-                    <td>${process.startDate}</td>
-                    <td>${process.dueDate}</td>
-                    <td>${process.deadlineType === 'business' ? 'Úteis' : 'Corridos'}</td>
-                    <td>${process.days}</td>
-                    <td class="status ${status.class}">${status.label}</td>
-                    <td>
-                        <button class="btn-success" onclick="toggleComplete('${process.id}')">${process.completed ? 'Reabrir' : 'Concluir'}</button>
-                        <button class="btn-secondary" onclick="editProcess('${process.id}')">Editar</button>
-                        <button class="btn-warning" onclick="duplicateProcess('${process.id}')">Duplicar</button>
-                        <button class="btn-danger" onclick="deleteProcess('${process.id}')">Excluir</button>
-                        <button class="btn-light" onclick="toggleDiligencias('${process.id}')">Diligências</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-                // Append diligencias section
-                const dilRow = document.createElement('tr');
-                dilRow.style.display = 'none';
-                dilRow.id = 'dil-' + process.id;
-                dilRow.innerHTML = `
-                    <td colspan="9">
-                        <div class="diligencias-container">
-                            <h4>Diligências</h4>
-                            <ul id="dil-list-${process.id}">
-                                ${process.diligencias.map(d => `
-                                    <li>
-                                        <span>${d.description}</span>
-                                        <button class="btn-success" onclick="toggleDiligenciaComplete('${process.id}', '${d.id}')">${d.completed ? 'Reabrir' : 'Concluir'}</button>
-                                        <button class="btn-danger" onclick="deleteDiligencia('${process.id}', '${d.id}')">Excluir</button>
-                                    </li>
-                                `).join('')}
-                            </ul>
-                            <div class="form-group">
-                                <input type="text" id="dil-input-${process.id}" placeholder="Nova diligência" />
-                                <button class="btn-primary" onclick="addDiligencia('${process.id}')">Adicionar</button>
-                            </div>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(dilRow);
-            });
-        }
-
-        function toggleDiligencias(id) {
-            const row = document.getElementById('dil-' + id);
-            if (row) {
-                row.style.display = row.style.display === 'none' ? '' : 'none';
-            }
-        }
-
-        function addDiligencia(processId) {
-            const input = document.getElementById('dil-input-' + processId);
-            const description = input.value.trim();
-            if (!description) return;
-            const process = processes.find(p => p.id === processId);
-            if (process) {
-                process.diligencias.push({ id: generateId(), description, completed: false });
-                saveToStorage();
-                input.value = '';
-                renderTable();
-                toggleDiligencias(processId);
-                toggleDiligencias(processId);
-            }
-        }
-
-        function toggleDiligenciaComplete(processId, dilId) {
-            const process = processes.find(p => p.id === processId);
-            if (process) {
-                const dil = process.diligencias.find(d => d.id === dilId);
-                if (dil) {
-                    dil.completed = !dil.completed;
-                    saveToStorage();
-                    renderTable();
-                    toggleDiligencias(processId);
-                    toggleDiligencias(processId);
-                }
-            }
-        }
-
-        function deleteDiligencia(processId, dilId) {
-            const process = processes.find(p => p.id === processId);
-            if (process) {
-                process.diligencias = process.diligencias.filter(d => d.id !== dilId);
-                saveToStorage();
-                renderTable();
-                toggleDiligencias(processId);
-                toggleDiligencias(processId);
-            }
-        }
-
-        function toggleComplete(id) {
-            const process = processes.find(p => p.id === id);
-            if (process) {
-                process.completed = !process.completed;
-                saveToStorage();
-                renderTable();
-            }
-        }
-
-        function editProcess(id) {
-            const process = processes.find(p => p.id === id);
-            if (!process) return;
-            const newProcessNumber = prompt('Número do Processo:', process.processNumber);
-            if (newProcessNumber === null) return;
-            const newSubject = prompt('Assunto:', process.subject);
-            if (newSubject === null) return;
-            const newResponsible = prompt('Responsável:', process.responsible);
-            if (newResponsible === null) return;
-            const newStartDate = prompt('Data de Início (YYYY-MM-DD):', process.startDate);
-            if (newStartDate === null) return;
-            const newDays = prompt('Prazo (nº de dias):', process.days);
-            if (newDays === null) return;
-            const newDeadlineType = prompt('Tipo de Prazo (business ou calendar):', process.deadlineType);
-            if (newDeadlineType === null) return;
-            const newObservations = prompt('Observações:', process.observations);
-            if (newObservations === null) return;
-            // update
-            process.processNumber = newProcessNumber.trim();
-            process.subject = newSubject.trim();
-            process.responsible = newResponsible.trim();
-            process.startDate = newStartDate;
-            process.days = parseInt(newDays);
-            process.deadlineType = newDeadlineType.trim();
-            process.observations = newObservations.trim();
-            process.dueDate = calculateDueDate(process.startDate, process.days, process.deadlineType);
-            saveToStorage();
-            renderTable();
-        }
-
-        function duplicateProcess(id) {
-            const process = processes.find(p => p.id === id);
-            if (!process) return;
-            const newProcess = { ...process };
-            newProcess.id = generateId();
-            // Duplicate diligencias too, but new ids
-            newProcess.diligencias = process.diligencias.map(d => ({ ...d, id: generateId() }));
-            processes.push(newProcess);
-            saveToStorage();
-            renderTable();
-        }
-
-        function deleteProcess(id) {
-            if (!confirm('Tem certeza de que deseja excluir este processo?')) return;
-            processes = processes.filter(p => p.id !== id);
-            saveToStorage();
-            renderTable();
-        }
-
-        function sortBy(column) {
-            if (sortColumn === column) {
-                sortDirection = -sortDirection; // toggle direction
-            } else {
-                sortColumn = column;
-                sortDirection = 1; // default ascending
-            }
-            renderTable();
-        }
-
-        function exportData() {
-            const dataStr = JSON.stringify({ processes, holidays }, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'processos.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const obj = JSON.parse(e.target.result);
-                    if (obj.processes && Array.isArray(obj.processes)) {
-                        processes = obj.processes;
-                    }
-                    if (obj.holidays && Array.isArray(obj.holidays)) {
-                        holidays = obj.holidays;
-                    }
-                    saveToStorage();
-                    renderHolidays();
-                    renderTable();
-                } catch (err) {
-                    alert('Erro ao importar arquivo JSON.');
-                }
-            };
-            reader.readAsText(file);
-            // clear the file input
-            event.target.value = '';
-        }
-
-        function addHoliday() {
-            const date = document.getElementById('holidayDate').value;
-            if (!date) return;
-            if (holidays.includes(date)) {
-                alert('Feriado já existe.');
-                return;
-            }
-            holidays.push(date);
-            saveToStorage();
-            document.getElementById('holidayDate').value = '';
-            renderHolidays();
-        }
-
-        function removeHoliday(date) {
-            holidays = holidays.filter(d => d !== date);
-            saveToStorage();
-            renderHolidays();
-        }
-
-        function renderHolidays() {
-            const list = document.getElementById('holidayList');
-            list.innerHTML = '';
-            holidays.forEach(date => {
-                const item = document.createElement('div');
-                item.className = 'holiday-item';
-                item.innerHTML = `
-                    <span>${date}</span>
-                    <button class="btn-danger" onclick="removeHoliday('${date}')">&times;</button>
-                `;
-                list.appendChild(item);
-            });
-        }
-
-        window.onload = function() {
-            loadFromStorage();
-            renderHolidays();
-            renderTable();
-        };
-    </script>
+      }
+    });
+  </script>
 </body>
 </html>
